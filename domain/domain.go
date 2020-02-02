@@ -5,5 +5,3 @@ package domain
 .
 .
 */
-
-
