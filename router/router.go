@@ -9,15 +9,14 @@ import (
 var router = gin.Default()
 
 func MapRoutes() {
-	router.GET("/prueba", controllers.Prueba)
+
+	// CRUD users
+	router.POST("/create_user", controllers.CreatingUser)
+	router.GET("/get_user", controllers.GettingUser)
+	router.GET("/get_all_users", controllers.GettingUsers)
+
 }
 
 func Run() {
 	router.Run(":8080")
 }
-
-/* code
-.
-.
-.
-*/
