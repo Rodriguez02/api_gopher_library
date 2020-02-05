@@ -88,23 +88,24 @@ func UpdateUser(user domain.User) (domain.User, error) {
 
 // Eliminar un usuario del arreglo 'users' según el ID
 // del usuario pasada por el body
-func DeleteUser(user domain.User) (domain.User, error) {
-	err := validateUser(user)
+func DeleteUser(i string) (domain.User, error) {
+	id, err := validateID(i)
 	if err != nil {
-		return user, nil
+		return domain.User{}, ErrorInvalidID
 	}
 
-	err = existsUser(user)
-	if err != nil {
-		for i := 0; i < len(users); i++ {
-			if users[i].ID == user.ID {
-				users = append(users[:i], users[i+1:]...)
-				return user, nil
-			}
+	user, err := searchUser(id)
+	if err != nil{
+		return domain.User{}, err
+	}
+
+	for i := 0; i < len(users); i++ {
+		if users[i].ID == user.ID {
+			users = append(users[:i], users[i+1:]...)
+			break
 		}
 	}
-
-	return user, ErrorUserNotFound
+	return user, nil
 }
 
 func validateUser(user domain.User) error {

@@ -15,7 +15,7 @@ func MapRoutes() {
 	router.GET("/get_user/:id", controllers.GettingUser)
 	router.GET("/get_all_users", controllers.GettingUsers)
 	router.PUT("/update_user", controllers.UpdatingUser)
-	router.DELETE("/delete_user", controllers.DeletingUser)
+	router.DELETE("/delete_user/:id", controllers.DeletingUser)
 
 }
 

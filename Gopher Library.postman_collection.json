@@ -147,7 +147,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"id\": 1,\n\t\"nombre\" : \"Emi\",\n\t\"apellido\" : \"Calvin\"\n} ",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -155,14 +155,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/delete_user",
+					"raw": "http://localhost:8080/delete_user/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"delete_user"
+						"delete_user",
+						"1"
 					]
 				}
 			},

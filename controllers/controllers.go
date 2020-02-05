@@ -27,37 +27,19 @@ func CreatingUser(c *gin.Context) {
 }
 
 func GettingUsers(c *gin.Context) {
-	users, err := services.GetAllUsers()
+	user, err := services.GetAllUsers()
 	if err != nil {
 		apiErr := parseError(err)
 		c.String(apiErr.Status, apiErr.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, user)
 }
-
-// func GettingUser(c *gin.Context) {
-// 	var user domain.User
-
-// 	err := c.BindJSON(&user)
-// 	if err != nil {
-// 		c.String(http.StatusBadRequest, err.Error())
-// 	}
-
-// 	user, err = services.GetUser(user)
-// 	if err != nil {
-// 		apiErr := parseError(err)
-// 		c.String(apiErr.Status, apiErr.Error())
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, user)
-// }
 
 func GettingUser(c *gin.Context) {
 	id := c.Param("id")
-	
+
 	user, err := services.GetUser(id)
 	if err != nil {
 		apiErr := parseError(err)
@@ -87,14 +69,9 @@ func UpdatingUser(c *gin.Context) {
 }
 
 func DeletingUser(c *gin.Context) {
-	var user domain.User
+	id := c.Param("id")
 
-	err := c.BindJSON(&user)
-	if err != nil {
-		c.String(http.StatusBadRequest, err.Error())
-	}
-
-	user, err = services.DeleteUser(user)
+	user, err := services.DeleteUser(id)
 	if err != nil {
 		apiErr := parseError(err)
 		c.String(apiErr.Status, apiErr.Error())
