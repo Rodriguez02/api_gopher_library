@@ -64,6 +64,43 @@ func GettingUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func UpdatingUser(c* gin.Context){
+	var user domain.User
+
+	err := c.BindJSON(&user)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+	}
+
+	user, err = services.UpdateUser(user)
+	if err != nil {
+		apiErr := parseError(err)
+		c.String(apiErr.Status, apiErr.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+func DeletingUser(c* gin.Context){
+	var user domain.User
+
+	err := c.BindJSON(&user)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+	}
+
+	user, err = services.DeleteUser(user)
+	if err != nil {
+		apiErr := parseError(err)
+		c.String(apiErr.Status, apiErr.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+
 func parseError(e error) ApiError {
 	switch e {
 	case services.ErrorNoName, services.ErrorNoSurname, services.ErrorInvalidID, services.ErrorUserExists:

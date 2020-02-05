@@ -41,6 +41,33 @@ func GetUser(user domain.User) (domain.User, error) {
 	return user, ErrorUserNotFound
 }
 
+func UpdateUser(user domain.User) (domain.User, error) {
+	err := validateUser(user)
+	if err == ErrorUserExists {
+		for i := 0; i < len(users); i++ {
+			if users[i].ID == user.ID {
+				users[i].Nombre = user.Nombre
+				users[i].Apellido = user.Apellido
+				return users[i], nil
+			}
+		}
+	}
+	return user, ErrorUserNotFound
+}
+
+func DeleteUser(user domain.User) (domain.User, error){
+	err := validateUser(user)
+	if err == ErrorUserExists {
+		for i := 0; i < len(users); i++ {
+			if users[i].ID == user.ID {
+				users = append(users[:i], users[i+1:]...)
+				return user, nil
+			}
+		}
+	}
+	return user, ErrorUserNotFound
+}
+
 func validateUser(user domain.User) error {
 	if !user.HasName() {
 		return ErrorNoName
