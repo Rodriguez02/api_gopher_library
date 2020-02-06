@@ -17,3 +17,23 @@ func (u User) HasSurname() bool {
 func (u User) IDValid() bool {
 	return u.ID > 0
 }
+
+type Book struct {
+	Nombre string `json:"nombre"`
+	Autor  string `json:"autor"`
+}
+
+type GoogleBooks struct {
+	Items []Items `json:"items"`
+}
+
+type Items struct {
+	Info Information `json:"volumeInfo"`
+}
+
+type Information struct {
+	Titulo           string   `json:"title"`
+	Subtitulo        string   `json:"subtitle"`
+	Autores          []string `json:"authors"`
+	FechaPublicacion string   `json:"publishedDate"`
+}

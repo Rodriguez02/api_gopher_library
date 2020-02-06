@@ -80,3 +80,22 @@ func DeletingUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
+
+func GettingBook(c *gin.Context) {
+	var book domain.Book
+	var result []domain.Information
+
+	err := c.BindJSON(&book)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+	}
+
+	result, err = services.GetBook(book)
+	if err != nil {
+		apiErr := parseError(err)
+		c.String(apiErr.Status, apiErr.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}

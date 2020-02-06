@@ -2,7 +2,10 @@ package services
 
 import (
 	"api_gopher_library/domain"
+	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 )
 
@@ -10,12 +13,17 @@ var (
 	users []domain.User
 
 	// errores
-	ErrorNoName        = errors.New("user needs name")
-	ErrorNoSurname     = errors.New("user needs surname")
-	ErrorInvalidID     = errors.New("id isn't valid")
-	ErrorUserExists    = errors.New("this user exists")
-	ErrorUsersNotFound = errors.New("there aren't users")
-	ErrorUserNotFound  = errors.New("user not found")
+	ErrorNoName             = errors.New("user needs name")
+	ErrorNoSurname          = errors.New("user needs surname")
+	ErrorInvalidID          = errors.New("id isn't valid")
+	ErrorUserExists         = errors.New("this user exists")
+	ErrorUsersNotFound      = errors.New("there aren't users")
+	ErrorUserNotFound       = errors.New("user not found")
+	ErrorRequestExternalAPI = errors.New("error in request to external API")
+)
+
+const (
+	based = "https://www.googleapis.com/books/v1/volumes?key=AIzaSyDVnZCPWXdzNcWiipQ7ng5E-eLRg3xu7MY&fields=items(volumeInfo(title,subtitle,authors,publishedDate))&q="
 )
 
 /********************************************************/
@@ -57,10 +65,10 @@ func GetUser(i string) (domain.User, error) {
 	}
 
 	user, err := searchUser(id)
-	if err != nil{
+	if err != nil {
 		return domain.User{}, err
 	}
-	
+
 	return user, nil
 }
 
@@ -95,7 +103,7 @@ func DeleteUser(i string) (domain.User, error) {
 	}
 
 	user, err := searchUser(id)
-	if err != nil{
+	if err != nil {
 		return domain.User{}, err
 	}
 
@@ -106,6 +114,27 @@ func DeleteUser(i string) (domain.User, error) {
 		}
 	}
 	return user, nil
+}
+
+func GetBook(book domain.Book) ([]domain.Information, error) {
+	url := based + book.Nombre + "+inauthor:" + book.Autor
+	responseExternalAPI, err1 := http.Get(url)
+	jsonDataFromHttp, err2 := ioutil.ReadAll(responseExternalAPI.Body)
+
+	var api_book domain.GoogleBooks
+	err3 := json.Unmarshal([]byte(jsonDataFromHttp), &api_book)
+
+	if err1 != nil || err2 != nil || err3 != nil {
+		return []domain.Information{}, ErrorRequestExternalAPI
+	}
+
+	var result_books []domain.Information
+
+	for _, b := range api_book.Items {
+		result_books = append(result_books, b.Info)
+	}
+
+	return result_books, nil
 }
 
 func validateUser(user domain.User) error {
@@ -141,9 +170,9 @@ func validateID(id string) (int, error) {
 	return num, nil
 }
 
-func searchUser(id int) (domain.User, error){	
-	for _,u := range users {
-		if u.ID == id{
+func searchUser(id int) (domain.User, error) {
+	for _, u := range users {
+		if u.ID == id {
 			return u, nil
 		}
 	}

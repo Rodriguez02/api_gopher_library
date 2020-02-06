@@ -17,6 +17,9 @@ func MapRoutes() {
 	router.PUT("/update_user", controllers.UpdatingUser)
 	router.DELETE("/delete_user/:id", controllers.DeletingUser)
 
+	// Read book
+	router.GET("/get_book", controllers.GettingBook)
+
 }
 
 func Run() {
