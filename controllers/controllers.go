@@ -8,14 +8,82 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ApiError struct {
-	Status  int
-	Message string
+/***************************************************
+******************CONTROLLERS LOANS*****************
+***************************************************/
+
+func CreatingLoan(c *gin.Context){
+	var loan domain.Loan
+	err := c.BindJSON(&loan)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error()) 
+	}
+	loan, err = services.CreateLoan(loan)
+	if err != nil {
+		apiErr := parseError(err)
+		c.String(apiErr.Status, apiErr.Error())
+		return
+	}
+	c.JSON(http.StatusOK, loan)
 }
 
-func (e *ApiError) Error() string {
-	return e.Message
+func GettingLoans(c *gin.Context){
+	loans, err := services.GetAllLoans()
+	if err != nil {
+		apiErr := parseError(err)
+		c.String(apiErr.Status, apiErr.Error())
+		return
+	}
+	c.JSON(http.StatusOK, loans)
 }
+
+func GettingLoan(c *gin.Context) {
+	id := c.Param("id")
+
+	loan, err := services.GetLoan(id)
+	if err != nil {
+		apiErr := parseError(err)
+		c.String(apiErr.Status, apiErr.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, loan)
+}
+
+func UpdatingLoan(c *gin.Context){
+	var loan domain.Loan
+
+	err := c.BindJSON(&loan)
+	if err != nil{
+		c.String(http.StatusBadRequest, err.Error())
+	}
+
+	loan, err = services.UpdateLoan(loan)
+	if err != nil {
+		apiErr := parseError(err)
+		c.String(apiErr.Status, apiErr.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, loan)
+}
+
+func DeletingLoan(c *gin.Context){
+	id := c.Param("id")
+
+	loan, err := services.DeleteLoan(id)
+	if err != nil {
+		apiErr := parseError(err)
+		c.String(apiErr.Status, apiErr.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, loan)
+}
+
+/***************************************************
+******************CONTROLLERS USERS*****************
+***************************************************/
 
 func CreatingUser(c *gin.Context) {
 	var user domain.User
@@ -64,13 +132,3 @@ func GettingUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func parseError(e error) ApiError {
-	switch e {
-	case services.ErrorNoName, services.ErrorNoSurname, services.ErrorInvalidID, services.ErrorUserExists:
-		return ApiError{400, e.Error()}
-	case services.ErrorUsersNotFound, services.ErrorUserNotFound:
-		return ApiError{404, e.Error()}
-	default:
-		return ApiError{500, e.Error()}
-	}
-}
