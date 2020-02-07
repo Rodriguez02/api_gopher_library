@@ -20,6 +20,15 @@ func MapRoutes() {
 	// Read book
 	router.GET("/get_book", controllers.GettingBook)
 
+	// CRUD loans
+	router.POST("/create_loan", controllers.CreatingLoan)
+	router.GET("/get_all_loans", controllers.GettingLoans)
+	router.GET("/get_loan/:id", controllers.GettingLoan)
+	router.PUT("/update_loan", controllers.UpdatingLoan)
+	router.DELETE("/delete_loan/:id", controllers.DeletingLoan)
+
+
+
 }
 
 func Run() {
