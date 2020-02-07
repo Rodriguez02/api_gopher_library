@@ -1,6 +1,6 @@
 package domain
 
-type myBook struct {
+type MyBook struct {
 	ID 		int    `json:"id"`
 	Title	string `json:"title"`
 	Amount  int	   `json:"amount"`

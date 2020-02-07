@@ -18,7 +18,7 @@ import (
 var (
 	users []domain.User
 	loans []domain.Loan
-	books []domain.myBook
+	books []domain.MyBook
     
 	// errores libros
 	ErrorBookNotFound 		= errors.New("book not found")
@@ -43,7 +43,6 @@ var (
 	ErrorNoAvailability     = errors.New("book without availability")
 	ErrorExpiredBooksOfUser = errors.New("expired books of user")
 	ErrorInvalidDueDate	    = errors.New("due date must be greater than current")
-	)
 )
 
 const (
@@ -56,12 +55,12 @@ const (
 
 func init(){
 	
-	book1 := domain.myBook{
+	book1 := domain.MyBook{
 							ID : 1,
 							Title : "Libro uno",
 							Amount : 5,
 						}
-	book2 := domain.myBook{
+	book2 := domain.MyBook{
 							ID : 2,
 							Title : "Libro dos",
 							Amount : 2,
@@ -172,7 +171,7 @@ func existsLoan(loan domain.Loan) error {
 
 /************** CRUD LOANS : FUNCIONES AUXILIARES **************/
 
-func availability(book domain.myBook) (int, error){
+func availability(book domain.MyBook) (int, error){
 	booksAvailables := book.Amount - amountRentedBooks(book.ID)
 	if ( booksAvailables <= 0){
 		return 0, ErrorNoAvailability
@@ -243,13 +242,13 @@ func validateLoan(loan domain.Loan) error{
 	return nil
 }
 
-func searchBook(id int) (domain.myBook, error){	
+func searchBook(id int) (domain.MyBook, error){	
 	for _,b := range books {
 		if b.ID == id{
 			return b, nil
 		}
 	}
-	return domain.myBook{}, ErrorBookNotFound
+	return domain.MyBook{}, ErrorBookNotFound
 }
 
 /***************************************************
