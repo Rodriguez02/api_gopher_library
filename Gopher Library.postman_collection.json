@@ -186,7 +186,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"nombre\":\"Lord\",\n\t\"autor\":\"Tolkien\"\n}",
+					"raw": "{\n\t\"titulo\":\"Lord of \",\n\t\"autor\":\"Tolkien\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -4,9 +4,11 @@ import (
 	"api_gopher_library/domain"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -20,6 +22,7 @@ var (
 	ErrorUsersNotFound      = errors.New("there aren't users")
 	ErrorUserNotFound       = errors.New("user not found")
 	ErrorRequestExternalAPI = errors.New("error in request to external API")
+	ErrorSpecialCharInBooks = errors.New("there're almost a special character in title or author")
 )
 
 const (
@@ -117,7 +120,13 @@ func DeleteUser(i string) (domain.User, error) {
 }
 
 func GetBook(book domain.Book) ([]domain.Information, error) {
-	url := based + book.Nombre + "+inauthor:" + book.Autor
+	err := validateBook(book)
+	if err != nil {
+		return []domain.Information{}, err
+	}
+
+	url := based + strings.Replace(book.Titulo, " ", "+", -1) + "+inauthor:" + strings.Replace(book.Autor, " ", "+", -1)
+	fmt.Println(url)
 	responseExternalAPI, err1 := http.Get(url)
 	jsonDataFromHttp, err2 := ioutil.ReadAll(responseExternalAPI.Body)
 
@@ -177,4 +186,11 @@ func searchUser(id int) (domain.User, error) {
 		}
 	}
 	return domain.User{}, ErrorUserNotFound
+}
+
+func validateBook(book domain.Book) error {
+	if book.SpecialChar() {
+		return ErrorSpecialCharInBooks
+	}
+	return nil
 }

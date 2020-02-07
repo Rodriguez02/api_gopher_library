@@ -6,6 +6,10 @@ type User struct {
 	Apellido string `json:"apellido"`
 }
 
+const (
+	specialChar = ".-,/|'#&%?¿`!¡;:[]{}+*º<>"
+)
+
 func (u User) HasName() bool {
 	return u.Nombre != ""
 }
@@ -19,8 +23,36 @@ func (u User) IDValid() bool {
 }
 
 type Book struct {
-	Nombre string `json:"nombre"`
+	Titulo string `json:"titulo"`
 	Autor  string `json:"autor"`
+}
+
+func (b Book) HasTitle() bool {
+	return b.Titulo != ""
+}
+
+func (b Book) HasAuthor() bool {
+	return b.Autor != ""
+}
+
+func (b Book) SpecialChar() bool {
+	for _, cw := range b.Titulo {
+		for _, cc := range specialChar {
+			if cw == cc {
+				return true
+			}
+		}
+	}
+
+	for _, cw := range b.Autor {
+		for _, cc := range specialChar {
+			if cw == cc {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 type GoogleBooks struct {

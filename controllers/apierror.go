@@ -13,7 +13,7 @@ func (e *ApiError) Error() string {
 
 func parseError(e error) ApiError {
 	switch e {
-	case services.ErrorNoName, services.ErrorNoSurname, services.ErrorInvalidID, services.ErrorUserExists:
+	case services.ErrorNoName, services.ErrorNoSurname, services.ErrorInvalidID, services.ErrorUserExists, services.ErrorSpecialCharInBooks:
 		return ApiError{400, e.Error()}
 	case services.ErrorUsersNotFound, services.ErrorUserNotFound:
 		return ApiError{404, e.Error()}
