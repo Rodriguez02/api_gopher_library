@@ -206,6 +206,154 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "create_loan",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 1,\n\t\"idUser\": 1,\n\t\"idBook\": \"12e8PJ2T7sQC\",\n\t\"dueDate\": 11111111111111\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/create_loan",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"create_loan"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_all_loans",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/get_all_loans",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"get_all_loans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_loan/1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/get_loan/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"get_loan",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update_loan",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"idBook\": \"12e8PJ2T7sQC\",\n    \"idUser\": 1,\n    \"dueDate\": 11111111111111,\n    \"bookInfo\": {\n        \"title\": \"Theasdaaasdasdasdsdasd Towers\",\n        \"subtitle\": \"Being the Second Part of The Lord of the Rings\",\n        \"authors\": [\n            \"J.R.R.\"\n        ],\n        \"publishedDate\": \"2012-02-15\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/update_loan",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"update_loan"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete_loan/1",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/delete_loan/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"delete_loan",
+						"1"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}

@@ -4,24 +4,20 @@ import (
 	"api_gopher_library/domain"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
-	//"encoding/json"
-	//"io/ioutil"
-	//"net/http"
 	"time"
 )
 
 var (
-	users []domain.User
-	loans []domain.Loan
-	books []domain.MyBook
-    
+	users       []domain.User
+	loans       []domain.Loan
+	booksAmount = make(map[string]int)
+
 	// errores libros
-	ErrorBookNotFound 		= errors.New("book not found")
+	ErrorBookNotFound = errors.New("book not found")
 
 	// errores usuarios
 	ErrorNoName             = errors.New("user needs name")
@@ -32,42 +28,23 @@ var (
 	ErrorUserNotFound       = errors.New("user not found")
 	ErrorRequestExternalAPI = errors.New("error in request to external API")
 	ErrorSpecialCharInBooks = errors.New("there're almost a special character in title or author")
-	
+
 	// errores prestamos
-	ErrorNoIDBook 	        = errors.New("loan needs idbook")
-	ErrorNoIDUser	        = errors.New("loan needs iduser")
+	ErrorNoIDBook           = errors.New("loan needs idbook")
+	ErrorNoIDUser           = errors.New("loan needs iduser")
 	ErrorNoDueDate          = errors.New("loan needs due")
 	ErrorLoanExists         = errors.New("this loan exists")
 	ErrorLoansNotFound      = errors.New("there aren't loans")
 	ErrorLoanNotFound       = errors.New("loan not found")
 	ErrorNoAvailability     = errors.New("book without availability")
 	ErrorExpiredBooksOfUser = errors.New("expired books of user")
-	ErrorInvalidDueDate	    = errors.New("due date must be greater than current")
+	ErrorInvalidDueDate     = errors.New("due date must be greater than current")
 )
 
 const (
-	based = "https://www.googleapis.com/books/v1/volumes?key=AIzaSyDVnZCPWXdzNcWiipQ7ng5E-eLRg3xu7MY&fields=items(volumeInfo(title,subtitle,authors,publishedDate))&q="
+	based       = "https://www.googleapis.com/books/v1/volumes?key=AIzaSyDVnZCPWXdzNcWiipQ7ng5E-eLRg3xu7MY&q="
+	amountBooks = 2
 )
-
-/********************************************************/
-/******************** CRUD USERS ************************/
-/********************************************************/
-
-func init(){
-	
-	book1 := domain.MyBook{
-							ID : 1,
-							Title : "Libro uno",
-							Amount : 5,
-						}
-	book2 := domain.MyBook{
-							ID : 2,
-							Title : "Libro dos",
-							Amount : 2,
-						}
-	books = append(books, book1)
-	books = append(books, book2)
-}
 
 /***************************************************
 *********************CRUD LOANS*********************
@@ -75,19 +52,32 @@ func init(){
 
 func CreateLoan(loan domain.Loan) (domain.Loan, error) {
 	err := existsLoan(loan)
-	if err != nil{
+	if err != nil {
 		return domain.Loan{}, ErrorLoanExists
 	}
 
-	err = validateLoan(loan)
+	info, amount, err := validateLoan(loan)
 	if err != nil {
-		return loan, err
+		return domain.Loan{}, err
 	}
+
+	loan.Info.Titulo = info.Titulo
+	loan.Info.Subtitulo = info.Subtitulo
+	loan.Info.Autores = info.Autores
+	loan.Info.FechaPublicacion = info.FechaPublicacion
+
+	if amount == 0 {
+		booksAmount[loan.IDBook] = 1
+	}
+	if amount < amountBooks {
+		booksAmount[loan.IDBook]++
+	}
+
 	loans = append(loans, loan)
 	return loan, nil
 }
 
-func GetAllLoans() ([]domain.Loan, error){
+func GetAllLoans() ([]domain.Loan, error) {
 	if loans == nil {
 		return loans, ErrorLoansNotFound
 	}
@@ -101,10 +91,10 @@ func GetLoan(i string) (domain.Loan, error) {
 	}
 
 	loan, err := searchLoan(id)
-	if err != nil{
+	if err != nil {
 		return domain.Loan{}, err
 	}
-	
+
 	return loan, nil
 }
 
@@ -114,21 +104,24 @@ func UpdateLoan(loan domain.Loan) (domain.Loan, error) {
 		return domain.Loan{}, ErrorLoanNotFound
 	}
 
-	err = validateLoan(loan)
+	_, _, err = validateLoan(loan)
 	if err != nil {
 		return domain.Loan{}, err
 	}
 
 	for i := 0; i < len(loans); i++ {
 		if users[i].ID == loan.ID {
-			loans[i].IDBook  = loan.IDBook
-			loans[i].IDUser  = loan.IDUser
+			loans[i].IDBook = loan.IDBook
+			loans[i].IDUser = loan.IDUser
 			loans[i].DueDate = loan.DueDate
+			loans[i].Info.Titulo = loan.Info.Titulo
+			loans[i].Info.Autores = loan.Info.Autores
+			loans[i].Info.Subtitulo = loan.Info.Subtitulo
 			return loans[i], nil
 		}
 	}
 
-	return loan, ErrorLoanNotFound
+	return domain.Loan{}, ErrorLoanNotFound
 }
 
 func DeleteLoan(i string) (domain.Loan, error) {
@@ -138,7 +131,7 @@ func DeleteLoan(i string) (domain.Loan, error) {
 	}
 
 	loan, err := searchLoan(id)
-	if err != nil{
+	if err != nil {
 		return domain.Loan{}, err
 	}
 
@@ -146,14 +139,15 @@ func DeleteLoan(i string) (domain.Loan, error) {
 		if loans[i].ID == id {
 			loans[len(loans)-1], loans[i] = loans[i], loans[len(loans)-1]
 			loans = loans[:len(loans)-1]
+			booksAmount[loans[i].IDBook]--
 		}
 	}
 	return loan, nil
 }
 
-func searchLoan(id int) (domain.Loan, error){	
-	for _,l := range loans {
-		if l.ID == id{
+func searchLoan(id int) (domain.Loan, error) {
+	for _, l := range loans {
+		if l.ID == id {
 			return l, nil
 		}
 	}
@@ -171,17 +165,22 @@ func existsLoan(loan domain.Loan) error {
 
 /************** CRUD LOANS : FUNCIONES AUXILIARES **************/
 
-func availability(book domain.MyBook) (int, error){
-	booksAvailables := book.Amount - amountRentedBooks(book.ID)
-	if ( booksAvailables <= 0){
-		return 0, ErrorNoAvailability
+func availability(id string) (int, error) {
+	loans, exist := booksAmount[id]
+
+	if exist && loans > amountBooks {
+		return -1, ErrorNoAvailability
 	}
-	return booksAvailables, nil
+	if !exist {
+		return 0, nil
+	}
+
+	return loans, nil
 }
 
-func expiredBooksOfUser(idUser int) bool{
+func expiredBooksOfUser(idUser int) bool {
 	timeNow := time.Now().UnixNano() / int64(time.Millisecond)
-	for _, l := range loans{
+	for _, l := range loans {
 		if l.IDUser == idUser {
 			if timeNow > l.DueDate {
 				return true
@@ -191,64 +190,60 @@ func expiredBooksOfUser(idUser int) bool{
 	return false
 }
 
-func amountRentedBooks(id int) int{
-	rentedBooks := 0
-	for _,l := range loans {
-		if l.IDBook == id{
-			rentedBooks++
-		}
-	}
-	return rentedBooks
-}
-
-
-func validateLoan(loan domain.Loan) error{
-	if !loan.IDValid(){
-		return ErrorInvalidID
+func validateLoan(loan domain.Loan) (domain.Information, int, error) {
+	if !loan.IDValid() {
+		return domain.Information{}, -1, ErrorInvalidID
 	}
 	if !loan.HasIDBook() {
-		return ErrorNoIDBook
+		return domain.Information{}, -1, ErrorNoIDBook
 	}
-	if !loan.HasIDUser(){
-		return ErrorNoIDUser
+	if !loan.HasIDUser() {
+		return domain.Information{}, -1, ErrorNoIDUser
 	}
-	if !loan.HasDueDate(){
-		return ErrorNoDueDate
+	if !loan.HasDueDate() {
+		return domain.Information{}, -1, ErrorNoDueDate
 	}
 
-	book, err := searchBook(loan.IDBook) 
-	if err != nil{
-		return ErrorBookNotFound
+	book, err := searchBook(loan.IDBook)
+	if err != nil {
+		return domain.Information{}, -1, err
 	}
+
 	_, err = searchUser(loan.IDUser)
 	if err != nil {
-		return ErrorUserNotFound
+		return domain.Information{}, -1, err
 	}
 
 	timeNow := time.Now().UnixNano() / int64(time.Millisecond)
 	if loan.DueDate <= timeNow {
-		return ErrorInvalidDueDate
+		return domain.Information{}, -1, ErrorInvalidDueDate
 	}
 
-	_, err = availability(book)
-	if err != nil{
-		return ErrorNoAvailability
+	amount, err := availability(loan.IDBook)
+	if err != nil {
+		return domain.Information{}, -1, ErrorNoAvailability
 	}
 
 	if expiredBooksOfUser(loan.IDUser) != false {
-		return ErrorExpiredBooksOfUser
+		return domain.Information{}, -1, ErrorExpiredBooksOfUser
 	}
 
-	return nil
+	return book, amount, nil
 }
 
-func searchBook(id int) (domain.MyBook, error){	
-	for _,b := range books {
-		if b.ID == id{
-			return b, nil
-		}
+func searchBook(id string) (domain.Information, error) {
+	url := based + "id=" + id
+
+	api_book, err := apiResponse(url)
+	if err != nil {
+		return domain.Information{}, err
 	}
-	return domain.MyBook{}, ErrorBookNotFound
+
+	if len(api_book.Items) == 0 {
+		return domain.Information{}, ErrorBookNotFound
+	}
+
+	return api_book.Items[0].Info, nil
 }
 
 /***************************************************
@@ -341,14 +336,29 @@ func DeleteUser(i string) (domain.User, error) {
 	return user, nil
 }
 
-func GetBook(book domain.Book) ([]domain.Information, error) {
+func GetBook(book domain.Book) ([]domain.Items, error) {
 	err := validateBook(book)
 	if err != nil {
-		return []domain.Information{}, err
+		return []domain.Items{}, err
 	}
 
 	url := based + strings.Replace(book.Titulo, " ", "+", -1) + "+inauthor:" + strings.Replace(book.Autor, " ", "+", -1)
-	fmt.Println(url)
+	url += "&fields=items(id,volumeInfo(title,subtitle,authors,publishedDate))"
+
+	api_book, err := apiResponse(url)
+	if err != nil {
+		return []domain.Items{}, err
+	}
+
+	var result_books []domain.Items
+	for _, b := range api_book.Items {
+		result_books = append(result_books, b)
+	}
+
+	return result_books, nil
+}
+
+func apiResponse(url string) (domain.GoogleBooks, error) {
 	responseExternalAPI, err1 := http.Get(url)
 	jsonDataFromHttp, err2 := ioutil.ReadAll(responseExternalAPI.Body)
 
@@ -356,16 +366,10 @@ func GetBook(book domain.Book) ([]domain.Information, error) {
 	err3 := json.Unmarshal([]byte(jsonDataFromHttp), &api_book)
 
 	if err1 != nil || err2 != nil || err3 != nil {
-		return []domain.Information{}, ErrorRequestExternalAPI
+		return domain.GoogleBooks{}, ErrorRequestExternalAPI
 	}
 
-	var result_books []domain.Information
-
-	for _, b := range api_book.Items {
-		result_books = append(result_books, b.Info)
-	}
-
-	return result_books, nil
+	return api_book, nil
 }
 
 func validateUser(user domain.User) error {
@@ -408,9 +412,9 @@ func validateID(id string) (int, error) {
 	return num, nil
 }
 
-func searchUser(id int) (domain.User, error){	
-	for _,u := range users {
-		if u.ID == id{
+func searchUser(id int) (domain.User, error) {
+	for _, u := range users {
+		if u.ID == id {
 			return u, nil
 		}
 	}
