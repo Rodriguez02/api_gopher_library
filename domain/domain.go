@@ -1,31 +1,26 @@
 package domain
 
-type MyBook struct {
-	ID 		int    `json:"id"`
-	Title	string `json:"title"`
-	Amount  int	   `json:"amount"`
-}
-
 type Loan struct {
-	ID		 int   `json:"id"`
-	IDBook   int   `json:"idBook"`
-	IDUser	 int   `json:"idUser"`
-	DueDate	 int64 `json:"dueDate"`
+	ID      int         `json:"id"`
+	IDBook  string      `json:"idBook"`
+	IDUser  int         `json:"idUser"`
+	DueDate int64       `json:"dueDate"`
+	Info    Information `json:"bookInfo"`
 }
 
-func (l Loan) IDValid() bool{
+func (l Loan) IDValid() bool {
 	return l.ID > 0
 }
 
-func (l Loan) HasIDBook() bool{
-	return l.IDBook > 0
+func (l Loan) HasIDBook() bool {
+	return l.IDBook != ""
 }
 
-func (l Loan) HasIDUser() bool{
+func (l Loan) HasIDUser() bool {
 	return l.IDUser > 0
 }
 
-func (l Loan) HasDueDate() bool{
+func (l Loan) HasDueDate() bool {
 	return l.DueDate > 0
 }
 
@@ -89,6 +84,7 @@ type GoogleBooks struct {
 }
 
 type Items struct {
+	Id   string      `json:"id"`
 	Info Information `json:"volumeInfo"`
 }
 

@@ -27,8 +27,6 @@ func MapRoutes() {
 	router.PUT("/update_loan", controllers.UpdatingLoan)
 	router.DELETE("/delete_loan/:id", controllers.DeletingLoan)
 
-
-
 }
 
 func Run() {

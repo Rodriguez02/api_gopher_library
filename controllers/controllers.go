@@ -12,11 +12,11 @@ import (
 ******************CONTROLLERS LOANS*****************
 ***************************************************/
 
-func CreatingLoan(c *gin.Context){
+func CreatingLoan(c *gin.Context) {
 	var loan domain.Loan
 	err := c.BindJSON(&loan)
 	if err != nil {
-		c.String(http.StatusBadRequest, err.Error()) 
+		c.String(http.StatusBadRequest, err.Error())
 	}
 	loan, err = services.CreateLoan(loan)
 	if err != nil {
@@ -27,7 +27,7 @@ func CreatingLoan(c *gin.Context){
 	c.JSON(http.StatusOK, loan)
 }
 
-func GettingLoans(c *gin.Context){
+func GettingLoans(c *gin.Context) {
 	loans, err := services.GetAllLoans()
 	if err != nil {
 		apiErr := parseError(err)
@@ -50,11 +50,11 @@ func GettingLoan(c *gin.Context) {
 	c.JSON(http.StatusOK, loan)
 }
 
-func UpdatingLoan(c *gin.Context){
+func UpdatingLoan(c *gin.Context) {
 	var loan domain.Loan
 
 	err := c.BindJSON(&loan)
-	if err != nil{
+	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 	}
 
@@ -68,7 +68,7 @@ func UpdatingLoan(c *gin.Context){
 	c.JSON(http.StatusOK, loan)
 }
 
-func DeletingLoan(c *gin.Context){
+func DeletingLoan(c *gin.Context) {
 	id := c.Param("id")
 
 	loan, err := services.DeleteLoan(id)
@@ -160,7 +160,7 @@ func DeletingUser(c *gin.Context) {
 
 func GettingBook(c *gin.Context) {
 	var book domain.Book
-	var result []domain.Information
+	var result []domain.Items
 
 	err := c.BindJSON(&book)
 	if err != nil {
