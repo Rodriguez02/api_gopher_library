@@ -19,6 +19,7 @@ var (
 	// errores libros
 	ErrorBookNotFound = errors.New("book not found")
 
+
 	// errores usuarios
 	ErrorNoName             = errors.New("user needs name")
 	ErrorNoSurname          = errors.New("user needs surname")
@@ -39,6 +40,7 @@ var (
 	ErrorNoAvailability     = errors.New("book without availability")
 	ErrorExpiredBooksOfUser = errors.New("expired books of user")
 	ErrorInvalidDueDate     = errors.New("due date must be greater than current")
+	ErrorInvalidFormatDate  = errors.New("invalid due date. example: 2 Jan 2006 = 2006-01-02")
 )
 
 const (
@@ -56,20 +58,26 @@ func CreateLoan(loan domain.Loan) (domain.Loan, error) {
 		return domain.Loan{}, ErrorLoanExists
 	}
 
-	info, amount, err := validateLoan(loan)
+	err = validateLoan(loan)
 	if err != nil {
 		return domain.Loan{}, err
 	}
+
+	info, _ := searchBook(loan.IDBook)
+	amount, _ := availability(loan.IDBook)
 
 	loan.Info.Titulo = info.Titulo
 	loan.Info.Subtitulo = info.Subtitulo
 	loan.Info.Autores = info.Autores
 	loan.Info.FechaPublicacion = info.FechaPublicacion
 
+	if amount >= amountBooks {
+		return domain.Loan{}, ErrorNoAvailability
+	}
 	if amount == 0 {
 		booksAmount[loan.IDBook] = 1
 	}
-	if amount < amountBooks {
+	if amount < amountBooks && amount != 0 {
 		booksAmount[loan.IDBook]++
 	}
 
@@ -104,7 +112,7 @@ func UpdateLoan(loan domain.Loan) (domain.Loan, error) {
 		return domain.Loan{}, ErrorLoanNotFound
 	}
 
-	_, _, err = validateLoan(loan)
+	err = validateLoan(loan)
 	if err != nil {
 		return domain.Loan{}, err
 	}
@@ -178,57 +186,91 @@ func availability(id string) (int, error) {
 	return loans, nil
 }
 
-func expiredBooksOfUser(idUser int) bool {
-	timeNow := time.Now().UnixNano() / int64(time.Millisecond)
-	for _, l := range loans {
+func expiredLoans(idUser int) error{
+	timeNow := time.Now()
+	for _, l := range loans{
 		if l.IDUser == idUser {
-			if timeNow > l.DueDate {
-				return true
+			dueDate, err := time.Parse("2006-01-02", l.DueDate)
+			if err != nil {
+				return ErrorInvalidFormatDate
+			}
+			if timeNow.After(dueDate) {
+				return ErrorInvalidDueDate
 			}
 		}
 	}
-	return false
+	return nil
 }
 
-func validateLoan(loan domain.Loan) (domain.Information, int, error) {
-	if !loan.IDValid() {
-		return domain.Information{}, -1, ErrorInvalidID
+func validEmptyFields(loan domain.Loan, c chan error){
+	c <- nil
+	if !loan.IDValid(){
+		c <- ErrorInvalidID
 	}
 	if !loan.HasIDBook() {
-		return domain.Information{}, -1, ErrorNoIDBook
+		c <- ErrorNoIDBook
 	}
-	if !loan.HasIDUser() {
-		return domain.Information{}, -1, ErrorNoIDUser
+	if !loan.HasIDUser(){
+		c <- ErrorNoIDUser
 	}
-	if !loan.HasDueDate() {
-		return domain.Information{}, -1, ErrorNoDueDate
+	if !loan.HasDueDate(){
+		c <- ErrorNoDueDate
 	}
+}
 
-	book, err := searchBook(loan.IDBook)
+func validBook(l string, c chan error){
+	_, err := searchBook(l) 
+	c <- nil
+	if err != nil{
+		c <- err
+	}
+	_, err = availability(l)
+	if err != nil{
+		c <- err
+	}
+}
+
+func validUser(l int, c chan error){
+	_, err := searchUser(l)
+	c <- err
+}
+
+func validDueDate(dd string, c chan error){
+	c <- nil
+	timeNow := time.Now()
+	dueDate, err := time.Parse("2006-01-02", dd)
 	if err != nil {
-		return domain.Information{}, -1, err
+		c <- ErrorInvalidFormatDate
+	}
+	if timeNow.After(dueDate) {
+		c <- ErrorInvalidDueDate
+	}
+}
+
+func validExpiredLoans(idUser int, c chan error){
+	err := expiredLoans(idUser)
+	c <- err
+}
+
+
+func validateLoan(loan domain.Loan) error {
+
+	c := make(chan error)
+
+	go validEmptyFields(loan, c)
+	go validBook(loan.IDBook, c)
+	go validUser(loan.IDUser, c)
+	go validDueDate(loan.DueDate, c)
+	go validExpiredLoans(loan.IDUser, c)
+
+	for i := 0 ; i < 5; i++ {
+		value := <- c
+		if value != nil {
+			return value
+		}
 	}
 
-	_, err = searchUser(loan.IDUser)
-	if err != nil {
-		return domain.Information{}, -1, err
-	}
-
-	timeNow := time.Now().UnixNano() / int64(time.Millisecond)
-	if loan.DueDate <= timeNow {
-		return domain.Information{}, -1, ErrorInvalidDueDate
-	}
-
-	amount, err := availability(loan.IDBook)
-	if err != nil {
-		return domain.Information{}, -1, ErrorNoAvailability
-	}
-
-	if expiredBooksOfUser(loan.IDUser) != false {
-		return domain.Information{}, -1, ErrorExpiredBooksOfUser
-	}
-
-	return book, amount, nil
+	return nil
 }
 
 func searchBook(id string) (domain.Information, error) {

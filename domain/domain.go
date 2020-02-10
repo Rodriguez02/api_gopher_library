@@ -4,7 +4,7 @@ type Loan struct {
 	ID      int         `json:"id"`
 	IDBook  string      `json:"idBook"`
 	IDUser  int         `json:"idUser"`
-	DueDate int64       `json:"dueDate"`
+	DueDate string       `json:"dueDate"`
 	Info    Information `json:"bookInfo"`
 }
 
@@ -21,7 +21,7 @@ func (l Loan) HasIDUser() bool {
 }
 
 func (l Loan) HasDueDate() bool {
-	return l.DueDate > 0
+	return l.DueDate != ""
 }
 
 type User struct {
