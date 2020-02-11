@@ -1,10 +1,11 @@
 package domain
 
+/*********************** LOAN **************************/
 type Loan struct {
 	ID      int         `json:"id"`
 	IDBook  string      `json:"idBook"`
 	IDUser  int         `json:"idUser"`
-	DueDate int64       `json:"dueDate"`
+	DueDate string      `json:"dueDate"`
 	Info    Information `json:"bookInfo"`
 }
 
@@ -21,18 +22,15 @@ func (l Loan) HasIDUser() bool {
 }
 
 func (l Loan) HasDueDate() bool {
-	return l.DueDate > 0
+	return l.DueDate != ""
 }
 
+/*********************** USER **************************/
 type User struct {
 	ID       int    `json:"id"`
 	Nombre   string `json:"nombre"`
 	Apellido string `json:"apellido"`
 }
-
-const (
-	specialChar = ".-,/|'#&%?¿`!¡;:[]{}+*º<>"
-)
 
 func (u User) HasName() bool {
 	return u.Nombre != ""
@@ -45,6 +43,11 @@ func (u User) HasSurname() bool {
 func (u User) IDValid() bool {
 	return u.ID > 0
 }
+
+/*********************** BOOK **************************/
+const (
+	specialChar = ".-,/|'#&%?¿`!¡;:[]{}+*º<>$="
+)
 
 type Book struct {
 	Titulo string `json:"titulo"`
@@ -79,6 +82,7 @@ func (b Book) SpecialChar() bool {
 	return false
 }
 
+/***************** API GOOGLE BOOKS ********************/
 type GoogleBooks struct {
 	Items []Items `json:"items"`
 }
