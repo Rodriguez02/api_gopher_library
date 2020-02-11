@@ -231,31 +231,40 @@ func expiredLoans(idUser int) error {
 
 // control if the loan hasn't empty fields
 func validEmptyFields(loan domain.Loan, c chan error) {
-	c <- nil
+	err := false
 	if !loan.IDValid() {
+		err = true
 		c <- ErrorInvalidID
 	}
 	if !loan.HasIDBook() {
+		err = true
 		c <- ErrorNoIDBook
 	}
 	if !loan.HasIDUser() {
+		err = true
 		c <- ErrorNoIDUser
 	}
 	if !loan.HasDueDate() {
+		err = true
 		c <- ErrorNoDueDate
+	}
+	if !err {
+		c <- nil
 	}
 }
 
 // control if the book of the loan is valid and it's availabilited
 func validBook(l string, c chan error) {
 	_, err := searchBook(l)
-	c <- nil
 	if err != nil {
 		c <- err
 	}
 	_, err = availability(l)
 	if err != nil {
 		c <- err
+	}
+	if err == nil {
+		c <- nil
 	}
 }
 
@@ -267,14 +276,17 @@ func validUser(l int, c chan error) {
 
 // control if the due date of the loan is valid
 func validDueDate(dd string, c chan error) {
-	c <- nil
 	timeNow := time.Now()
 	dueDate, err := time.Parse("2006-01-02", dd)
 	if err != nil {
 		c <- ErrorInvalidFormatDate
 	}
 	if timeNow.After(dueDate) {
+		err = ErrorInvalidDueDate
 		c <- ErrorInvalidDueDate
+	}
+	if err == nil {
+		c <- nil
 	}
 }
 
