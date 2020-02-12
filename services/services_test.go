@@ -131,6 +131,14 @@ func TestGetAllUsersOK(t *testing.T) {
 	})
 }
 
+func TestGetAllUsersNotOK(t *testing.T) {
+	users = []domain.User{}
+	_, err := GetAllUsers()
+	if  ErrorUsersNotFound != err {
+		t.Fail()
+	}
+}
+
 func TestGetUserOK(t *testing.T) {
 	r := struct {
 		TestName string
@@ -293,4 +301,27 @@ func TestDeleteUserNotOk(t *testing.T) {
 			t.Fail()
 		}
 	})
+}
+
+
+func TestValidateBookOk(t *testing.T){
+	book := domain.Book {
+		Titulo: "Titulo",
+		Autor: "Autor",
+	}
+	err := validateBook(book)
+	if err != nil {
+		t.Fail()
+	}
+}
+
+func TestValidateBookNotOk(t *testing.T){
+	book := domain.Book {
+		Titulo: "Titu/lo",
+		Autor: "Autor",
+	}
+	err := validateBook(book)
+	if err == nil {
+		t.Fail()
+	}
 }
