@@ -49,9 +49,9 @@ Steps to import collections:
 
 Then in the terminal, move to the folder where 'main.go' is located and run the API with the following command:
 
-´´´
+```
 go run main.go
-´´´
+```
 
 Now, you test any endpoint.
 
@@ -100,10 +100,10 @@ The requirements that we propose for this project are the following
 We have tested the files services.go and domain.go. To run the GO test, you must position yourself in these folders and use the following commands on the terminal:
 
 * run the complete test:
-´´´
+```
 go test 
-´´´
+```
 * runs the full test but with the percentage coverage:
-´´´
+```
 go test -cover 
-´´´
+```
