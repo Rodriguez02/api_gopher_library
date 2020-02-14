@@ -49,7 +49,7 @@ Steps to import collections:
 
 Then in the terminal, move to the folder where 'main.go' is located and run the API with the following command:
 
-```go
+```console
 go run main.go
 ```
 
