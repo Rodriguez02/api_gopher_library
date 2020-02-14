@@ -74,7 +74,7 @@ The requirements that we propose for this project are the following
 | Method      | Endpoint        |                 URL                  | Required body  |
 |:-----------:|:---------------:|:------------------------------------:|:--------------:|
 |     GET     | /getUser/:id    | http://localhost:8080/getUser/:id    |   Only param   |
-|     GET     | /getAllUser     | http://localhost:8080/getAllUser     |   Yes          |
+|     GET     | /getAllUser     | http://localhost:8080/getAllUser     |   No           |
 |     POST    | /createUser     | http://localhost:8080/createUser     |   Yes          |
 |     PUT     | /updateUser     | http://localhost:8080/updateUser     |   Yes          |
 |     DELETE  | /deleteUser/:id | http://localhost:8080/deleteUser/:id |   Only param   |
@@ -84,7 +84,7 @@ The requirements that we propose for this project are the following
 | Method      | Endpoint        |                 URL                  | Required body  |
 |:-----------:|:---------------:|:------------------------------------:|:--------------:|
 |     GET     | /getLoan/:id    | http://localhost:8080/getLoan/:id    |   Only param   |
-|     GET     | /getAllLoans    | http://localhost:8080/getAllLoans    |   Yes          |
+|     GET     | /getAllLoans    | http://localhost:8080/getAllLoans    |   No           |
 |     POST    | /createLoan     | http://localhost:8080/createLoan     |   Yes          |
 |     PUT     | /updateLoan     | http://localhost:8080/updateLoan     |   Yes          |
 |     DELETE  | /deleteLoan/:id | http://localhost:8080/deleteLoan/:id |   Only param   |
