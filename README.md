@@ -1,6 +1,6 @@
 # Gopher Library
 
-<img align="right" width="159px" src="libraryGopher.png">
+<img align="right" width="159px" src="Markdown/libraryGopher.png">
 
 ## Go read with me!
 
@@ -38,13 +38,13 @@ You should download the repository and move it to the `../projects_go/src/..` fo
 Steps to import collections:
 
 1. To import the collection in postman:
-<img width="400px" src="importCollection.png">
+<img width="400px" src="Markdown/importCollection.png">
 
 2. And select the collection:
-<img width="400px" src="selectCollection.png">
+<img width="400px" src="Markdown/selectCollection.png">
 
 3. Final result:           
-<img width="200px" src="collection.png">
+<img width="200px" src="Markdown/collection.png">
 
 Now, you test any endpoint.
 
@@ -60,7 +60,7 @@ The requirements that we propose for this project are the following
 
 ## Endpoints
 
-<img align="middle" src="gopher_full.png">
+<img align="middle" src="Markdown/gopher_full.png">
 
 **USERS**
 
