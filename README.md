@@ -100,10 +100,10 @@ The requirements that we propose for this project are the following
 We have tested the files services.go and domain.go. To run the GO test, you must position yourself in these folders and use the following commands on the terminal:
 
 * run the complete test:
-```go
+```console
 go test 
 ```
 * runs the full test but with the percentage coverage:
-```go
+```console
 go test -cover 
 ```
