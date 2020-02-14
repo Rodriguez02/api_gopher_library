@@ -22,6 +22,7 @@ The project is divided in a model MVC (Model View Controllers) and its organizat
   - [Quick Start](#quick-start)
   - [Requeriments](#requeriments-1)
   - [Endpoints](#endpoints)
+  - [Testing](#testing)
 
 ## Requeriments
 
@@ -45,6 +46,12 @@ Steps to import collections:
 
 3. Final result:           
 <img width="200px" src="Markdown/collection.png">
+
+Then in the terminal, move to the folder where 'main.go' is located and run the API with the following command:
+
+´´´
+go run main.go
+´´´
 
 Now, you test any endpoint.
 
@@ -87,3 +94,16 @@ The requirements that we propose for this project are the following
 | Method      | Endpoint        |                 URL                  |
 |:-----------:|:---------------:|:------------------------------------:|
 |     GET     | /getBook/:id    | http://localhost:8080/getBook/:id    |  
+
+## Testing
+
+We have tested the files services.go and domain.go. To run the GO test, you must position yourself in these folders and use the following commands on the terminal:
+
+* run the complete test:
+´´´
+go test 
+´´´
+* runs the full test but with the percentage coverage:
+´´´
+go test -cover 
+´´´
