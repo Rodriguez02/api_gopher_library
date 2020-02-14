@@ -71,29 +71,29 @@ The requirements that we propose for this project are the following
 
 **USERS**
 
-| Method      | Endpoint        |                 URL                  |
-|:-----------:|:---------------:|:------------------------------------:|
-|     GET     | /getUser/:id    | http://localhost:8080/getUser/:id    |  
-|     GET     | /getAllUser     | http://localhost:8080/getAllUser     |  
-|     POST    | /createUser     | http://localhost:8080/createUser     |  
-|     PUT     | /updateUser     | http://localhost:8080/updateUser     |  
-|     DELETE  | /deleteUser/:id | http://localhost:8080/deleteUser/:id |
+| Method      | Endpoint        |                 URL                  | Required body  |
+|:-----------:|:---------------:|:------------------------------------:|:--------------:|
+|     GET     | /getUser/:id    | http://localhost:8080/getUser/:id    |   Only param   |
+|     GET     | /getAllUser     | http://localhost:8080/getAllUser     |   Yes          |
+|     POST    | /createUser     | http://localhost:8080/createUser     |   Yes          |
+|     PUT     | /updateUser     | http://localhost:8080/updateUser     |   Yes          |
+|     DELETE  | /deleteUser/:id | http://localhost:8080/deleteUser/:id |   Only param   |
 
 **LOANS**
 
-| Method      | Endpoint        |                 URL                  |
-|:-----------:|:---------------:|:------------------------------------:|
-|     GET     | /getLoan/:id    | http://localhost:8080/getLoan/:id    |  
-|     GET     | /getAllLoans    | http://localhost:8080/getAllLoans    |  
-|     POST    | /createLoan     | http://localhost:8080/createLoan     |  
-|     PUT     | /updateLoan     | http://localhost:8080/updateLoan     |  
-|     DELETE  | /deleteLoan/:id | http://localhost:8080/deleteLoan/:id |
+| Method      | Endpoint        |                 URL                  | Required body  |
+|:-----------:|:---------------:|:------------------------------------:|:--------------:|
+|     GET     | /getLoan/:id    | http://localhost:8080/getLoan/:id    |   Only param   |
+|     GET     | /getAllLoans    | http://localhost:8080/getAllLoans    |   Yes          |
+|     POST    | /createLoan     | http://localhost:8080/createLoan     |   Yes          |
+|     PUT     | /updateLoan     | http://localhost:8080/updateLoan     |   Yes          |
+|     DELETE  | /deleteLoan/:id | http://localhost:8080/deleteLoan/:id |   Only param   |
 
 **BOOKS**
 
-| Method      | Endpoint        |                 URL                  |
-|:-----------:|:---------------:|:------------------------------------:|
-|     GET     | /getBook/:id    | http://localhost:8080/getBook/:id    |  
+| Method      | Endpoint        |                 URL                  | Required body  |
+|:-----------:|:---------------:|:------------------------------------:|:--------------:|
+|     GET     | /getBook/:id    | http://localhost:8080/getBook/:id    |   Only param   |
 
 ## Testing
 
