@@ -4,7 +4,8 @@
 
 ## Go read with me!
 
-This is an API in language programming GO. Here you to do request to Google Books API the books you most want to read. OK let's GO!!!
+This is an API in language programming GO. Here you to do request to Google Books API the books you most want to read. 
+You can to create users and manage them, also each user can to create loans of some books and manage them. OK let's GO!!!
 
 The project is divided in a model MVC (Model View Controllers) and its organization is the next: 
 
