@@ -129,8 +129,6 @@ func UpdateLoan(loan domain.Loan) (domain.Loan, error) {
 		return domain.Loan{}, err
 	}
 
-	var pos int
-
 	for i := 0; i < len(loans); i++ {
 		if users[i].ID == loan.ID {
 			loans[i].IDBook = loan.IDBook
@@ -148,12 +146,12 @@ func UpdateLoan(loan domain.Loan) (domain.Loan, error) {
 			if loan.Info.Titulo != "" {
 				loans[i].Info.FechaPublicacion = loan.Info.FechaPublicacion
 			}
-			pos = i
-			break
+			
+			return loans[i], nil
 		}
 	}
 
-	return loans[pos], nil
+	return domain.Loan{}, err
 }
 
 /*DeleteLoan ...
