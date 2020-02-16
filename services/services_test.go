@@ -53,8 +53,8 @@ func TestCreateLoanOk(t *testing.T) {
 	ClearArrays()
 	CreateDataUser()
 
-	l, _ := CreateLoan(requestLoan)
-	if l != expectedLoan {
+	_, err := CreateLoan(requestLoan)
+	if err != nil {
 		t.Fail()
 	}
 }
