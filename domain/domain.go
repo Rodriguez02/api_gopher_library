@@ -93,8 +93,8 @@ type Items struct {
 }
 
 type Information struct {
-	Titulo           string   `json:"title"`
-	Subtitulo        string   `json:"subtitle"`
-	Autores          []string `json:"authors"`
-	FechaPublicacion string   `json:"publishedDate"`
+	Titulo           string    `json:"title"`
+	Subtitulo        string    `json:"subtitle"`
+	Autores          [5]string `json:"authors"`
+	FechaPublicacion string    `json:"publishedDate"`
 }

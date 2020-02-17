@@ -42,7 +42,7 @@ var (
 )
 
 const (
-	amountBooks = 2                                                                                            // max amount of copies in all books
+	amountBooks = 5                                                                                            // max amount of copies in all books
 	based       = "https://www.googleapis.com/books/v1/volumes?key=AIzaSyDVnZCPWXdzNcWiipQ7ng5E-eLRg3xu7MY&q=" // url based to consume API
 )
 
@@ -50,10 +50,11 @@ const (
 ************************** CRUD LOANS ************************
 *************************************************************/
 
-// create loans through array of type domain.Loan
-// search the book, set the Info in loan and control
-// if exists the book in the loan copies.
-// If exists increment one, else the add it to the map amountBooks
+/*CreateLoan ...
+create loans through array of type domain.Loan
+search the book, set the Info in loan and control
+if exists the book in the loan copies.
+If exists increment one, else the add it to the map amountBooks */
 func CreateLoan(loan domain.Loan) (domain.Loan, error) {
 	err := existsLoan(loan)
 	if err != nil {
@@ -87,8 +88,9 @@ func CreateLoan(loan domain.Loan) (domain.Loan, error) {
 	return loan, nil
 }
 
-// get all the loans from the array loans
-//if not exists loans then send an error
+/*GetAllLoans ...
+get all the loans from the array loans
+if not exists loans then send an error*/
 func GetAllLoans() ([]domain.Loan, error) {
 	if loans == nil || len(loans) == 0 {
 		return []domain.Loan{}, ErrorLoansNotFound
@@ -96,8 +98,9 @@ func GetAllLoans() ([]domain.Loan, error) {
 	return loans, nil
 }
 
-// get one specific loan with an id as parameter
-// if not exists loan then send an error
+/*GetLoan ...
+get one specific loan with an id as parameter
+if not exists loan then send an error*/
 func GetLoan(i string) (domain.Loan, error) {
 	id, err := validateID(i)
 	if err != nil {
@@ -112,8 +115,9 @@ func GetLoan(i string) (domain.Loan, error) {
 	return loan, nil
 }
 
-// update a specific loan with a loan as struct as parameter
-// if not exists or the loan isn't validated then send an error
+/*UpdateLoan ..
+update a specific loan with a loan as struct as parameter
+if not exists or the loan isn't validated then send an error*/
 func UpdateLoan(loan domain.Loan) (domain.Loan, error) {
 	err := existsLoan(loan)
 	if err == nil {
@@ -142,15 +146,17 @@ func UpdateLoan(loan domain.Loan) (domain.Loan, error) {
 			if loan.Info.Titulo != "" {
 				loans[i].Info.FechaPublicacion = loan.Info.FechaPublicacion
 			}
+			
 			return loans[i], nil
 		}
 	}
 
-	return domain.Loan{}, ErrorLoanNotFound
+	return domain.Loan{}, err
 }
 
-// delete a specific loan with an id as parameter
-// if not exists loan then send an error
+/*DeleteLoan ...
+delete a specific loan with an id as parameter
+if not exists loan then send an error*/
 func DeleteLoan(i string) (domain.Loan, error) {
 	id, err := validateID(i)
 	if err != nil {
@@ -321,8 +327,9 @@ func validateLoan(loan domain.Loan) error {
 ************************** CRUD USERS ************************
 *************************************************************/
 
-// create an user through of array users, and
-// control if is valid and if exists the user
+/*CreateUser ...
+create an user through of array users, and
+control if is valid and if exists the user*/
 func CreateUser(user domain.User) (domain.User, error) {
 	err := validateUser(user)
 	if err != nil {
@@ -338,7 +345,8 @@ func CreateUser(user domain.User) (domain.User, error) {
 	return user, nil
 }
 
-// get all users storage in array users
+/*GetAllUsers ...
+get all users storage in array users*/
 func GetAllUsers() ([]domain.User, error) {
 	if users == nil || len(users) == 0 {
 		return users, ErrorUsersNotFound
@@ -346,8 +354,9 @@ func GetAllUsers() ([]domain.User, error) {
 	return users, nil
 }
 
-// get an specific user with an id as parameter
-// if not exists the user then send an error
+/*GetUser ...
+get an specific user with an id as parameter
+if not exists the user then send an error*/
 func GetUser(i string) (domain.User, error) {
 	id, err := validateID(i)
 	if err != nil {
@@ -362,8 +371,9 @@ func GetUser(i string) (domain.User, error) {
 	return user, nil
 }
 
-// update the name and surname of the specific user
-// if not exists the user then send an error
+/*UpdateUser ...
+update the name and surname of the specific user
+if not exists the user then send an error*/
 func UpdateUser(user domain.User) (domain.User, error) {
 	err := validateUser(user)
 	if err != nil {
@@ -384,8 +394,9 @@ func UpdateUser(user domain.User) (domain.User, error) {
 	return domain.User{}, ErrorUserNotFound
 }
 
-// delete the specific user with an id as parameter
-// if not exists the user then send an error
+/*DeleteUser ...
+delete the specific user with an id as parameter
+if not exists the user then send an error*/
 func DeleteUser(i string) (domain.User, error) {
 	id, err := validateID(i)
 	if err != nil {
@@ -460,9 +471,10 @@ func searchUser(id int) (domain.User, error) {
 ************ CONSUME GOOGLE BOOKS API *******************
 ********************************************************/
 
-// consume the API of Google Books with the specific URI
-// to consult about the title and the author, and I bring
-// the complete title, subtitle, author/s and date of publication
+/*GetBook ...
+consume the API of Google Books with the specific URI
+to consult about the title and the author, and I bring
+the complete title, subtitle, author/s and date of publication */
 func GetBook(book domain.Book) ([]domain.Items, error) {
 	err := validateBook(book)
 	if err != nil {
@@ -472,17 +484,17 @@ func GetBook(book domain.Book) ([]domain.Items, error) {
 	url := based + strings.Replace(book.Titulo, " ", "+", -1) + "+inauthor:" + strings.Replace(book.Autor, " ", "+", -1)
 	url += "&fields=items(id,volumeInfo(title,subtitle,authors,publishedDate))"
 
-	api_book, err := apiResponse(url)
+	apiBook, err := apiResponse(url)
 	if err != nil {
 		return []domain.Items{}, err
 	}
 
-	var result_books []domain.Items
-	for _, b := range api_book.Items {
-		result_books = append(result_books, b)
+	var resultBooks []domain.Items
+	for _, b := range apiBook.Items {
+		resultBooks = append(resultBooks, b)
 	}
 
-	return result_books, nil
+	return resultBooks, nil
 }
 
 // consume the API of Google Books through of
@@ -490,26 +502,26 @@ func GetBook(book domain.Book) ([]domain.Items, error) {
 func searchBook(id string) (domain.Information, error) {
 	url := based + "id=" + id
 
-	api_book, err := apiResponse(url)
+	apiBook, err := apiResponse(url)
 	if err != nil {
 		return domain.Information{}, err
 	}
 
-	if len(api_book.Items) == 0 {
+	if len(apiBook.Items) == 0 {
 		return domain.Information{}, ErrorBookNotFound
 	}
 
-	return api_book.Items[0].Info, nil
+	return apiBook.Items[0].Info, nil
 }
 
 // generic funtions to consume URI and traslate the response
 // to a struct to work the data in the API library gopher
 func apiResponse(url string) (domain.GoogleBooks, error) {
 	responseExternalAPI, err1 := http.Get(url)
-	jsonDataFromHttp, err2 := ioutil.ReadAll(responseExternalAPI.Body)
+	jsonDataFromHTTP, err2 := ioutil.ReadAll(responseExternalAPI.Body)
 
-	var api_book domain.GoogleBooks
-	err3 := json.Unmarshal([]byte(jsonDataFromHttp), &api_book)
+	var apiBook domain.GoogleBooks
+	err3 := json.Unmarshal([]byte(jsonDataFromHTTP), &apiBook)
 
 	if err1 != nil || err2 != nil {
 		return domain.GoogleBooks{}, ErrorRequestExternalAPI
@@ -518,7 +530,7 @@ func apiResponse(url string) (domain.GoogleBooks, error) {
 		return domain.GoogleBooks{}, ErrorBookNotFound
 	}
 
-	return api_book, nil
+	return apiBook, nil
 }
 
 // control that title and author in the request hasn't
