@@ -22,7 +22,7 @@ func parseError(e error) ApiError {
 		case services.ErrorNoName, services.ErrorNoSurname, services.ErrorInvalidID, 
 				services.ErrorUserExists, services.ErrorSpecialCharInBooks, services.ErrorNoAvailability, 
 				services.ErrorInvalidDueDate, services.ErrorInvalidFormatDate, services.ErrorLoanExists,
-				services.ErrorNoIDBook, services.ErrorNoIDUser, services.ErrorNoDueDate:
+				services.ErrorNoIDBook, services.ErrorNoIDUser, services.ErrorNoDueDate, services.ErrorExpiredLoans:
 			return ApiError{400, e.Error()}
 		case services.ErrorUsersNotFound, services.ErrorUserNotFound, services.ErrorLoanNotFound, 
 				services.ErrorLoansNotFound, services.ErrorBookNotFound:

@@ -37,6 +37,7 @@ var (
 	ErrorLoansNotFound     = errors.New("there aren't loans")
 	ErrorLoanNotFound      = errors.New("loan not found")
 	ErrorNoAvailability    = errors.New("book without availability")
+	ErrorExpiredLoans      = errors.New("user has expired loans")
 	ErrorInvalidDueDate    = errors.New("due date must be greater than current")
 	ErrorInvalidFormatDate = errors.New("invalid due date. example: 2 Jan 2006 = 2006-01-02")
 )
@@ -146,7 +147,7 @@ func UpdateLoan(loan domain.Loan) (domain.Loan, error) {
 			if loan.Info.Titulo != "" {
 				loans[i].Info.FechaPublicacion = loan.Info.FechaPublicacion
 			}
-			
+
 			return loans[i], nil
 		}
 	}
@@ -228,7 +229,7 @@ func expiredLoans(idUser int) error {
 				return ErrorInvalidFormatDate
 			}
 			if timeNow.After(dueDate) {
-				return ErrorInvalidDueDate
+				return ErrorExpiredLoans
 			}
 		}
 	}
