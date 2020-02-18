@@ -25,7 +25,7 @@ The project is divided in a model MVC (Model View Controllers) and its organizat
   - [Endpoints](#endpoints)
   - [Testing](#testing)
 
-## Requeriments
+## Requirements to use API
 
 To start using the API you need installed the next:
 
