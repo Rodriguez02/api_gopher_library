@@ -19,9 +19,9 @@ The project is divided in a model MVC (Model View Controllers) and its organizat
 - [Gopher Library](#gopher-library)
   - [Go read with me!](#go-read-with-me)
   - [Contents](#contents)
-  - [Requeriments](#requeriments)
+  - [Requirements to use API](#requirements-to-use-API)
   - [Quick Start](#quick-start)
-  - [Requeriments](#requeriments-1)
+  - [Requeriments](#requeriments)
   - [Endpoints](#endpoints)
   - [Testing](#testing)
 
